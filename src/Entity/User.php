@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements  PasswordAuthenticatedUserInterface
+#[ApiResource]
+class User implements  UserInterface,PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -112,33 +116,25 @@ class User implements  PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Historique>
-     */
-    public function getHistoriques(): Collection
+
+
+
+
+
+
+    // === Méthodes of UserInterface ===
+
+    public function getUserIdentifier(): string
     {
-        return $this->historiques;
+        return $this->email;
     }
 
-    public function addHistorique(Historique $historique): static
+    public function getRoles(): array
     {
-        if (!$this->historiques->contains($historique)) {
-            $this->historiques->add($historique);
-            $historique->setChangedBy($this);
-        }
-
-        return $this;
+        return ['ROLE_USER'];
     }
-
-    public function removeHistorique(Historique $historique): static
+    public function eraseCredentials(): void
     {
-        if ($this->historiques->removeElement($historique)) {
-            // set the owning side to null (unless already changed)
-            if ($historique->getChangedBy() === $this) {
-                $historique->setChangedBy(null);
-            }
-        }
-
-        return $this;
+        // Si tu stockes des infos sensibles temporaires
     }
 }
