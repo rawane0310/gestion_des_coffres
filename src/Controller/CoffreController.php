@@ -42,13 +42,21 @@ final class CoffreController extends AbstractController
         $response = $coffreManager->searchByCode($code);
         return new JsonResponse($response['message'], $response['status']);
     }
+    #[Route(path:'/searchByNom', name:'searche_by_nom', methods: ['GET'])]
+    public function searchByNom(Request $request, CoffreManager $coffreManager): JsonResponse
+    {
+        $name = $request->query->get('name');
+        $response = $coffreManager->searchByNom($name);
+        return new JsonResponse($response['message'], $response['status']);
+    }
+
     #[Route('/','all_coffre',methods: ['GET'])]
     public function show(CoffreManager $coffreManager): JsonResponse
     {
         $response = $coffreManager->getAllCoffres();
         return new JsonResponse($response['message'], $response['status']);
     }
-    #[Route('/changeNom','change_nom',methods: ['PUT'])]
+    #[Route('/updateNom','change_nom',methods: ['PUT'])]
     public function updateNom(Request $request, CoffreManager $coffreManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

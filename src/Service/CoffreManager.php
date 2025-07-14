@@ -158,6 +158,34 @@ class CoffreManager {
         ];
     }
 
+    public function searchByNom(?string $name): array
+    {
+        if ($name === null) {
+            return [
+                'message' => ['error' => 'Name is required'],
+                'status' => 400
+            ];
+        }
+        $coffre = $this->coffreRepository->findOneBy(['nom'=> $name]);
+        if ($coffre) {
+            return [
+                'message' => [
+                    'data' => [[
+                            'id' => $coffre->getId(),
+                            'name' => $coffre->getNom(),
+                            'code' => $coffre->getCode()
+                        ]],
+                        'succes' => true
+                ],
+                'status' => 200
+            ];
+        };
+
+        return [
+            'message'=> ['error'=> 'No coffre found'],
+            'status'=> 404
+        ];
+    }
     public function searchByCode(?string $code): array
     {
         if ($code === null) {
@@ -172,14 +200,14 @@ class CoffreManager {
         if ($coffre) {
             return [
                 'message' => [
-                    'success' => true,
-                    'coffre' => [
-                        'id' => $coffre->getId(),
-                        'name' => $coffre->getNom(),
-                        'code' => $coffre->getCode()
-                    ]
-                ],
-                'status' => 200
+                        'data' => [[
+                            'id' => $coffre->getId(),
+                            'name' => $coffre->getNom(),
+                            'code' => $coffre->getCode()
+                        ]],
+                        'succes' => true
+                    ],
+                    'status' => 200
             ];
         }
 
@@ -190,16 +218,13 @@ class CoffreManager {
             if ($coffre) {
                 return [
                     'message' => [
-                        'success' => true,
-                        'coffre' => [
+                        'data' => [[
                             'id' => $coffre->getId(),
                             'name' => $coffre->getNom(),
-                            'current_code' => $coffre->getCode(),
-                        ],
-                        'historique' => [
-                            'id' => $historique->getId(),
+                            'code' => $coffre->getCode(),
                             'old_code' => $historique->getCode()
-                        ]
+                        ]],
+                        'succes' => true
                     ],
                     'status' => 200
                 ];
@@ -207,7 +232,11 @@ class CoffreManager {
         }
 
         return [
-            'message' => ['error' => 'Code does not exist'],
+            'message' => [
+                'data' => [],
+                'error' => 'Coffre not found',
+                'succes' => false
+            ],
             'status' => 404
         ];
     }
