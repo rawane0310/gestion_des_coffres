@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref , computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const email = ref('')
@@ -8,7 +8,7 @@ const password = ref('')
 const passwordVisible = ref(false)
 
 const errorMessage = ref('')
-const isAuthenticated = ref(false)
+
 
 const router = useRouter()
 
@@ -17,8 +17,15 @@ function togglePassword() {
   passwordVisible.value = !passwordVisible.value
 }
 
+const isEmailValid = computed(() => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)
+})
+
 
 async function handleLogin() {
+
+  
+
   try {
     const response = await fetch('http://127.0.0.1:8000/api/login_check', {
       method: 'POST',
@@ -69,8 +76,10 @@ async function handleLogin() {
         id="email"
         type="email"
         v-model="email"
+        placeholder="Enter email"
         required
       />
+      <p v-if="email && !isEmailValid" class="error">Invalid email format</p>
     </div>
 
     <div class="input-group">
@@ -80,6 +89,7 @@ async function handleLogin() {
       :type="passwordVisible ? 'text' : 'password'"
       id="password"
       v-model="password"
+      placeholder="Enter password"
       required
     />
     <img
@@ -113,8 +123,9 @@ async function handleLogin() {
 .input-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
   align-items: flex-start;
+  position: relative;
 }
 
 .input-group label {
@@ -129,11 +140,16 @@ async function handleLogin() {
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 13px; /* coins arrondis */
-  background-color: white; /* fond blanc */
-  color: black; /* texte noir */
+  border-radius: 13px; 
+  background-color: white; 
+  color: black; 
   outline: none;
   box-sizing: border-box;
+}
+
+.input-group input::placeholder {
+  color: #999;
+  opacity: 0.8;
 }
 
 .input-group input:focus {
@@ -156,6 +172,22 @@ async function handleLogin() {
   color: black;
   outline: none;
   box-sizing: border-box;
+}
+
+.password-wrapper input::placeholder {
+  color: #999;
+  opacity: 0.8;
+}
+
+.password-wrapper input::-ms-reveal,
+.password-wrapper input::-ms-clear {
+  display: none;
+}
+
+.password-wrapper input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  position: absolute;
+  right: 0;
 }
 
 .toggle-icon {
@@ -183,11 +215,22 @@ async function handleLogin() {
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 20px;
-  margin: 30px auto 0 auto;
+  margin-top: 15px;
+  margin: 22px auto 0 auto;
 }
 
 .login-form button:hover {
   background-color: #ff0080;
+}
+
+.error {
+  color: #ff0707;
+  font-size: 12px;
+  margin-top: 4px;
+  font-style: italic;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  height: 18 px;
 }
 </style>

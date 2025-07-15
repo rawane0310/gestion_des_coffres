@@ -4,8 +4,8 @@
       <h2>{{ title}}</h2>
 
       <div class="form-group">
-        <label>Name:</label>
-        <input v-model="name" type="text" placeholder="Enter name" />
+        <label class="custom-label">Name:</label>
+        <input v-model="name" type="text" placeholder="props.initialName || 'Enter name'" />
        
       </div>
 
@@ -37,12 +37,13 @@
     (e: 'close'): void
     }>()
 
-    const name = ref(props.initialName)
+    const name = ref('')
 
     
     watch(() => props.initialName, val => {
-  name.value = val
+  name.value = ''
   })
+
 function submitName() {
   if (name.value.trim()) {
     emit('submit', {name: name.value.trim()})
@@ -91,6 +92,11 @@ function submitName() {
   flex-direction: column;
 }
 
+.custom-label {
+  margin-bottom: 10px;
+  color: #000000;
+}
+
 input {
   width: 100%;
   padding: 8px;
@@ -99,16 +105,21 @@ input {
 }
 
 .error {
-  color: red;
+  color: #ff0707;
   font-size: 12px;
   margin-top: 4px;
+  font-style: italic;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  height: 18px;
 }
 
 .dialog-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 25px;
+  margin-top: 10px;
 }
 
 .cancel-btn,
