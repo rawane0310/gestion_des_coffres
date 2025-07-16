@@ -4,14 +4,17 @@
       <h2>Add New User</h2>
 
       <div class="form-group">
-        <label>Email:</label>
+        <label class="custom-label">Email:</label>
         <input v-model="email" type="email" placeholder="Enter email" />
         <p v-if="email && !isEmailValid" class="error">Invalid email format</p>
       </div>
 
       <div class="form-group">
-        <label>Password:</label>
+        <label class="custom-label">Password:</label>
         <input v-model="password" type="password" placeholder="Enter password" />
+        <p v-if="password && password.length < 8" class="error">
+          Password must be at least 8 characters long
+        </p>
       </div>
       <div class="flex-spacer"></div>
       <div class="dialog-buttons">
@@ -39,12 +42,12 @@ const emit = defineEmits<{
 const email = ref('')
 const password = ref('')
 
-// Vérifie le format de l'email avec une RegExp simple
+
 const isEmailValid = computed(() => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)
 })
 
-// Vérifie si le formulaire est rempli correctement
+
 const isFormValid = computed(() => {
   return email.value && password.value && isEmailValid.value
 })
@@ -75,7 +78,7 @@ function submitUser() {
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   width: 300px;
-  height: 240px; 
+  height: 195px; 
   display: flex;
   flex-direction: column;
 }
@@ -91,10 +94,17 @@ function submitUser() {
 }
 
 .form-group {
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
+
+.custom-label {
+  margin-bottom: 8px;
+  color: #000000;
+}
+
 
 input {
   width: 100%;
@@ -103,17 +113,24 @@ input {
   border-radius: 6px;
 }
 
+
+
 .error {
-  color: red;
+  color: #ff0707;
   font-size: 12px;
   margin-top: 4px;
+  font-style: italic;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  height: 18 px;
 }
 
 .dialog-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 40px;
+  margin-top: 3px;
 }
 
 .cancel-btn,
