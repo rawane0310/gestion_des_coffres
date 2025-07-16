@@ -24,13 +24,6 @@ class HistoriqueManager
 
         $historiques = $this->historiqueRepository->findBy(['coffre' => $coffreId]);
 
-        if (empty($historiques)) {
-            return [
-                'message' => ['error' => 'No historique found for this coffre'],
-                'status' => 404
-            ];
-        }
-
         $data = array_map(function ($h) {
             return [
                 'id' => $h->getId(),

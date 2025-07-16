@@ -166,24 +166,26 @@ class CoffreManager {
                 'status' => 400
             ];
         }
-        $coffre = $this->coffreRepository->findOneBy(['nom'=> $name]);
-        if ($coffre) {
-            return [
-                'message' => [
-                    'data' => [[
-                            'id' => $coffre->getId(),
-                            'name' => $coffre->getNom(),
-                            'code' => $coffre->getCode()
-                        ]],
-                        'succes' => true
-                ],
-                'status' => 200
-            ];
-        };
 
+        // Search all coffres with matching name
+        $coffres = $this->coffreRepository->findBy(['nom' => $name]);
+
+        // Map all results to the desired format
+        $data = array_map(function ($coffre) {
+            return [
+                'id' => $coffre->getId(),
+                'name' => $coffre->getNom(),
+                'code' => $coffre->getCode()
+            ];
+        }, $coffres);
+
+        // Return all matching results (empty array if no matches)
         return [
-            'message'=> ['error'=> 'No coffre found'],
-            'status'=> 404
+            'message' => [
+                'data' => $data,
+                'success' => true
+            ],
+            'status' => 200
         ];
     }
     public function searchByCode(?string $code): array
@@ -195,49 +197,40 @@ class CoffreManager {
             ];
         }
 
-        // Search in Coffre table
-        $coffre = $this->coffreRepository->findOneBy(['code' => $code]);
-        if ($coffre) {
-            return [
-                'message' => [
-                        'data' => [[
-                            'id' => $coffre->getId(),
-                            'name' => $coffre->getNom(),
-                            'code' => $coffre->getCode()
-                        ]],
-                        'succes' => true
-                    ],
-                    'status' => 200
+        $results = [];
+
+        // Search in current Coffre table first
+        $coffres = $this->coffreRepository->findBy(['code' => $code]);
+        foreach ($coffres as $coffre) {
+            $results[] = [
+                'id' => $coffre->getId(),
+                'name' => $coffre->getNom(),
+                'code' => $coffre->getCode(),
+
             ];
         }
 
-        // Search in Historique table
-        $historique = $this->historiqueRepository->findOneBy(['code' => $code]);
-        if ($historique) {
-            $coffre = $historique->getCoffre();
-            if ($coffre) {
-                return [
-                    'message' => [
-                        'data' => [[
-                            'id' => $coffre->getId(),
-                            'name' => $coffre->getNom(),
-                            'code' => $coffre->getCode(),
-                            'old_code' => $historique->getCode()
-                        ]],
-                        'succes' => true
-                    ],
-                    'status' => 200
+        // Search in Historique table for old codes
+        $historiques = $this->historiqueRepository->findBy(['code' => $code]);
+        foreach ($historiques as $historique) {
+            if ($historique->getCoffre()) {
+                $coffre = $historique->getCoffre();
+                $results[] = [
+                    'id' => $coffre->getId(),
+                    'name' => $coffre->getNom(),
+                    'code' => $coffre->getCode(),
+
                 ];
             }
         }
 
+        // Return all matching results
         return [
             'message' => [
-                'data' => [],
-                'error' => 'Coffre not found',
-                'succes' => false
+                'data' => $results,
+                'success' => true
             ],
-            'status' => 404
+            'status' => 200
         ];
     }
 
